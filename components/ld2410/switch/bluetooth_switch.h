@@ -1,12 +1,12 @@
 #pragma once
 
 #include "esphome/components/switch/switch.h"
-#include "../ld2410.h"
+#include "../HMMD_WAVE.h"
 
 namespace esphome {
-namespace ld2410 {
+namespace HMMD_WAVE {
 
-class BluetoothSwitch : public switch_::Switch, public Parented<LD2410Component> {
+class BluetoothSwitch : public switch_::Switch, public Parented<HMMD_WAVEComponent> {
  public:
   BluetoothSwitch() = default;
 
@@ -14,5 +14,5 @@ class BluetoothSwitch : public switch_::Switch, public Parented<LD2410Component>
   void write_state(bool state) override;
 };
 
-}  // namespace ld2410
+}  // namespace HMMD_WAVE
 }  // namespace esphome

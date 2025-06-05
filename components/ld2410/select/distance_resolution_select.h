@@ -1,12 +1,12 @@
 #pragma once
 
 #include "esphome/components/select/select.h"
-#include "../ld2410.h"
+#include "../HMMD_WAVE.h"
 
 namespace esphome {
-namespace ld2410 {
+namespace HMMD_WAVE {
 
-class DistanceResolutionSelect : public select::Select, public Parented<LD2410Component> {
+class DistanceResolutionSelect : public select::Select, public Parented<HMMD_WAVEComponent> {
  public:
   DistanceResolutionSelect() = default;
 
@@ -14,5 +14,5 @@ class DistanceResolutionSelect : public select::Select, public Parented<LD2410Co
   void control(const std::string &value) override;
 };
 
-}  // namespace ld2410
+}  // namespace HMMD_WAVE
 }  // namespace esphome

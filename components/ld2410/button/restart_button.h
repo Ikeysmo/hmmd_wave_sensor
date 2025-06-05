@@ -1,12 +1,12 @@
 #pragma once
 
 #include "esphome/components/button/button.h"
-#include "../ld2410.h"
+#include "../HMMD_WAVE.h"
 
 namespace esphome {
-namespace ld2410 {
+namespace HMMD_WAVE {
 
-class RestartButton : public button::Button, public Parented<LD2410Component> {
+class RestartButton : public button::Button, public Parented<HMMD_WAVEComponent> {
  public:
   RestartButton() = default;
 
@@ -14,5 +14,5 @@ class RestartButton : public button::Button, public Parented<LD2410Component> {
   void press_action() override;
 };
 
-}  // namespace ld2410
+}  // namespace HMMD_WAVE
 }  // namespace esphome

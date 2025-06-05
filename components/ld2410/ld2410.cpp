@@ -1,4 +1,4 @@
-#include "ld2410.h"
+#include "HMMD_WAVE.h"
 
 #include <utility>
 #ifdef USE_NUMBER
@@ -12,14 +12,14 @@
 #define lowbyte(val) (uint8_t)((val) &0xff)
 
 namespace esphome {
-namespace ld2410 {
+namespace HMMD_WAVE {
 
-static const char *const TAG = "ld2410";
+static const char *const TAG = "HMMD_WAVE";
 
-LD2410Component::LD2410Component() {}
+HMMD_WAVEComponent::HMMD_WAVEComponent() {}
 
-void LD2410Component::dump_config() {
-  ESP_LOGCONFIG(TAG, "LD2410:");
+void HMMD_WAVEComponent::dump_config() {
+  ESP_LOGCONFIG(TAG, "HMMD_WAVE:");
 #ifdef USE_BINARY_SENSOR
   LOG_BINARY_SENSOR("  ", "TargetBinarySensor", this->target_binary_sensor_);
   LOG_BINARY_SENSOR("  ", "MovingTargetBinarySensor", this->moving_target_binary_sensor_);
@@ -77,12 +77,12 @@ void LD2410Component::dump_config() {
   ESP_LOGCONFIG(TAG, "  Firmware Version : %s", const_cast<char *>(this->version_.c_str()));
 }
 
-void LD2410Component::setup() {
+void HMMD_WAVEComponent::setup() {
   ESP_LOGCONFIG(TAG, "Running setup");
   this->read_all_info();
 }
 
-void LD2410Component::read_all_info() {
+void HMMD_WAVEComponent::read_all_info() {
   this->set_config_mode_(true);
   this->get_version_();
   this->get_mac_();
@@ -98,13 +98,13 @@ void LD2410Component::read_all_info() {
 #endif
 }
 
-void LD2410Component::restart_and_read_all_info() {
+void HMMD_WAVEComponent::restart_and_read_all_info() {
   this->set_config_mode_(true);
   this->restart_();
   this->set_timeout(1000, [this]() { this->read_all_info(); });
 }
 
-void LD2410Component::loop() {
+void HMMD_WAVEComponent::loop() {
   const int max_line_length = 80;
   static uint8_t buffer[max_line_length];
 
@@ -113,7 +113,7 @@ void LD2410Component::loop() {
   }
 }
 
-void LD2410Component::send_command_(uint8_t command, const uint8_t *command_value, int command_value_len) {
+void HMMD_WAVEComponent::send_command_(uint8_t command, const uint8_t *command_value, int command_value_len) {
   ESP_LOGV(TAG, "Sending COMMAND %02X", command);
   // frame start bytes
   this->write_array(CMD_FRAME_HEADER, 4);
@@ -140,7 +140,7 @@ void LD2410Component::send_command_(uint8_t command, const uint8_t *command_valu
   delay(50);  // NOLINT
 }
 
-void LD2410Component::handle_periodic_data_(uint8_t *buffer, int len) {
+void HMMD_WAVEComponent::handle_periodic_data_(uint8_t *buffer, int len) {
   if (len < 12)
     return;  // 4 frame start bytes + 2 length bytes + 1 data end byte + 1 crc byte + 4 frame end bytes
   if (buffer[0] != 0xF4 || buffer[1] != 0xF3 || buffer[2] != 0xF2 || buffer[3] != 0xF1)  // check 4 frame start bytes
@@ -323,7 +323,7 @@ std::function<void(void)> set_number_value(number::Number *n, float value) {
 }
 #endif
 
-bool LD2410Component::handle_ack_data_(uint8_t *buffer, int len) {
+bool HMMD_WAVEComponent::handle_ack_data_(uint8_t *buffer, int len) {
   ESP_LOGV(TAG, "Handling ACK DATA for COMMAND %02X", buffer[COMMAND]);
   if (len < 10) {
     ESP_LOGE(TAG, "Error with last command : incorrect length");
@@ -472,7 +472,7 @@ bool LD2410Component::handle_ack_data_(uint8_t *buffer, int len) {
   return true;
 }
 
-void LD2410Component::readline_(int readch, uint8_t *buffer, int len) {
+void HMMD_WAVEComponent::readline_(int readch, uint8_t *buffer, int len) {
   static int pos = 0;
 
   if (readch >= 0) {
@@ -500,13 +500,13 @@ void LD2410Component::readline_(int readch, uint8_t *buffer, int len) {
   }
 }
 
-void LD2410Component::set_config_mode_(bool enable) {
+void HMMD_WAVEComponent::set_config_mode_(bool enable) {
   uint8_t cmd = enable ? CMD_ENABLE_CONF : CMD_DISABLE_CONF;
   uint8_t cmd_value[2] = {0x01, 0x00};
   this->send_command_(cmd, enable ? cmd_value : nullptr, 2);
 }
 
-void LD2410Component::set_bluetooth(bool enable) {
+void HMMD_WAVEComponent::set_bluetooth(bool enable) {
   this->set_config_mode_(true);
   uint8_t enable_cmd_value[2] = {0x01, 0x00};
   uint8_t disable_cmd_value[2] = {0x00, 0x00};
@@ -514,21 +514,21 @@ void LD2410Component::set_bluetooth(bool enable) {
   this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
 }
 
-void LD2410Component::set_distance_resolution(const std::string &state) {
+void HMMD_WAVEComponent::set_distance_resolution(const std::string &state) {
   this->set_config_mode_(true);
   uint8_t cmd_value[2] = {DISTANCE_RESOLUTION_ENUM_TO_INT.at(state), 0x00};
   this->send_command_(CMD_SET_DISTANCE_RESOLUTION, cmd_value, 2);
   this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
 }
 
-void LD2410Component::set_baud_rate(const std::string &state) {
+void HMMD_WAVEComponent::set_baud_rate(const std::string &state) {
   this->set_config_mode_(true);
   uint8_t cmd_value[2] = {BAUD_RATE_ENUM_TO_INT.at(state), 0x00};
   this->send_command_(CMD_SET_BAUD_RATE, cmd_value, 2);
   this->set_timeout(200, [this]() { this->restart_(); });
 }
 
-void LD2410Component::set_bluetooth_password(const std::string &password) {
+void HMMD_WAVEComponent::set_bluetooth_password(const std::string &password) {
   if (password.length() != 6) {
     ESP_LOGE(TAG, "set_bluetooth_password(): invalid password length, must be exactly 6 chars '%s'", password.c_str());
     return;
@@ -540,7 +540,7 @@ void LD2410Component::set_bluetooth_password(const std::string &password) {
   this->set_config_mode_(false);
 }
 
-void LD2410Component::set_engineering_mode(bool enable) {
+void HMMD_WAVEComponent::set_engineering_mode(bool enable) {
   this->set_config_mode_(true);
   last_engineering_mode_change_millis_ = millis();
   uint8_t cmd = enable ? CMD_ENABLE_ENG : CMD_DISABLE_ENG;
@@ -548,26 +548,26 @@ void LD2410Component::set_engineering_mode(bool enable) {
   this->set_config_mode_(false);
 }
 
-void LD2410Component::factory_reset() {
+void HMMD_WAVEComponent::factory_reset() {
   this->set_config_mode_(true);
   this->send_command_(CMD_RESET, nullptr, 0);
   this->set_timeout(200, [this]() { this->restart_and_read_all_info(); });
 }
 
-void LD2410Component::restart_() { this->send_command_(CMD_RESTART, nullptr, 0); }
+void HMMD_WAVEComponent::restart_() { this->send_command_(CMD_RESTART, nullptr, 0); }
 
-void LD2410Component::query_parameters_() { this->send_command_(CMD_QUERY, nullptr, 0); }
-void LD2410Component::get_version_() { this->send_command_(CMD_VERSION, nullptr, 0); }
-void LD2410Component::get_mac_() {
+void HMMD_WAVEComponent::query_parameters_() { this->send_command_(CMD_QUERY, nullptr, 0); }
+void HMMD_WAVEComponent::get_version_() { this->send_command_(CMD_VERSION, nullptr, 0); }
+void HMMD_WAVEComponent::get_mac_() {
   uint8_t cmd_value[2] = {0x01, 0x00};
   this->send_command_(CMD_MAC, cmd_value, 2);
 }
-void LD2410Component::get_distance_resolution_() { this->send_command_(CMD_QUERY_DISTANCE_RESOLUTION, nullptr, 0); }
+void HMMD_WAVEComponent::get_distance_resolution_() { this->send_command_(CMD_QUERY_DISTANCE_RESOLUTION, nullptr, 0); }
 
-void LD2410Component::get_light_control_() { this->send_command_(CMD_QUERY_LIGHT_CONTROL, nullptr, 0); }
+void HMMD_WAVEComponent::get_light_control_() { this->send_command_(CMD_QUERY_LIGHT_CONTROL, nullptr, 0); }
 
 #ifdef USE_NUMBER
-void LD2410Component::set_max_distances_timeout() {
+void HMMD_WAVEComponent::set_max_distances_timeout() {
   if (!this->max_move_distance_gate_number_->has_state() || !this->max_still_distance_gate_number_->has_state() ||
       !this->timeout_number_->has_state()) {
     return;
@@ -601,7 +601,7 @@ void LD2410Component::set_max_distances_timeout() {
   this->set_config_mode_(false);
 }
 
-void LD2410Component::set_gate_threshold(uint8_t gate) {
+void HMMD_WAVEComponent::set_gate_threshold(uint8_t gate) {
   number::Number *motionsens = this->gate_move_threshold_numbers_[gate];
   number::Number *stillsens = this->gate_still_threshold_numbers_[gate];
 
@@ -630,16 +630,16 @@ void LD2410Component::set_gate_threshold(uint8_t gate) {
   this->set_config_mode_(false);
 }
 
-void LD2410Component::set_gate_still_threshold_number(int gate, number::Number *n) {
+void HMMD_WAVEComponent::set_gate_still_threshold_number(int gate, number::Number *n) {
   this->gate_still_threshold_numbers_[gate] = n;
 }
 
-void LD2410Component::set_gate_move_threshold_number(int gate, number::Number *n) {
+void HMMD_WAVEComponent::set_gate_move_threshold_number(int gate, number::Number *n) {
   this->gate_move_threshold_numbers_[gate] = n;
 }
 #endif
 
-void LD2410Component::set_light_out_control() {
+void HMMD_WAVEComponent::set_light_out_control() {
 #ifdef USE_NUMBER
   if (this->light_threshold_number_ != nullptr && this->light_threshold_number_->has_state()) {
     this->light_threshold_ = this->light_threshold_number_->state;
@@ -669,9 +669,9 @@ void LD2410Component::set_light_out_control() {
 }
 
 #ifdef USE_SENSOR
-void LD2410Component::set_gate_move_sensor(int gate, sensor::Sensor *s) { this->gate_move_sensors_[gate] = s; }
-void LD2410Component::set_gate_still_sensor(int gate, sensor::Sensor *s) { this->gate_still_sensors_[gate] = s; }
+void HMMD_WAVEComponent::set_gate_move_sensor(int gate, sensor::Sensor *s) { this->gate_move_sensors_[gate] = s; }
+void HMMD_WAVEComponent::set_gate_still_sensor(int gate, sensor::Sensor *s) { this->gate_still_sensors_[gate] = s; }
 #endif
 
-}  // namespace ld2410
+}  // namespace HMMD_WAVE
 }  // namespace esphome

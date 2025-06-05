@@ -12,16 +12,16 @@ from esphome.const import (
     ICON_RESTART_ALERT,
 )
 
-from .. import CONF_LD2410_ID, LD2410Component, ld2410_ns
+from .. import CONF_HMMD_WAVE_ID, HMMD_WAVEComponent, HMMD_WAVE_ns
 
-QueryButton = ld2410_ns.class_("QueryButton", button.Button)
-ResetButton = ld2410_ns.class_("ResetButton", button.Button)
-RestartButton = ld2410_ns.class_("RestartButton", button.Button)
+QueryButton = HMMD_WAVE_ns.class_("QueryButton", button.Button)
+ResetButton = HMMD_WAVE_ns.class_("ResetButton", button.Button)
+RestartButton = HMMD_WAVE_ns.class_("RestartButton", button.Button)
 
 CONF_QUERY_PARAMS = "query_params"
 
 CONFIG_SCHEMA = {
-    cv.GenerateID(CONF_LD2410_ID): cv.use_id(LD2410Component),
+    cv.GenerateID(CONF_HMMD_WAVE_ID): cv.use_id(HMMD_WAVEComponent),
     cv.Optional(CONF_FACTORY_RESET): button.button_schema(
         ResetButton,
         device_class=DEVICE_CLASS_RESTART,
@@ -43,16 +43,16 @@ CONFIG_SCHEMA = {
 
 
 async def to_code(config):
-    ld2410_component = await cg.get_variable(config[CONF_LD2410_ID])
+    HMMD_WAVE_component = await cg.get_variable(config[CONF_HMMD_WAVE_ID])
     if factory_reset_config := config.get(CONF_FACTORY_RESET):
         b = await button.new_button(factory_reset_config)
-        await cg.register_parented(b, config[CONF_LD2410_ID])
-        cg.add(ld2410_component.set_reset_button(b))
+        await cg.register_parented(b, config[CONF_HMMD_WAVE_ID])
+        cg.add(HMMD_WAVE_component.set_reset_button(b))
     if restart_config := config.get(CONF_RESTART):
         b = await button.new_button(restart_config)
-        await cg.register_parented(b, config[CONF_LD2410_ID])
-        cg.add(ld2410_component.set_restart_button(b))
+        await cg.register_parented(b, config[CONF_HMMD_WAVE_ID])
+        cg.add(HMMD_WAVE_component.set_restart_button(b))
     if query_params_config := config.get(CONF_QUERY_PARAMS):
         b = await button.new_button(query_params_config)
-        await cg.register_parented(b, config[CONF_LD2410_ID])
-        cg.add(ld2410_component.set_query_button(b))
+        await cg.register_parented(b, config[CONF_HMMD_WAVE_ID])
+        cg.add(HMMD_WAVE_component.set_query_button(b))

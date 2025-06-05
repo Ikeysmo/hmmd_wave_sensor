@@ -1,12 +1,12 @@
 #pragma once
 
 #include "esphome/components/number/number.h"
-#include "../ld2410.h"
+#include "../HMMD_WAVE.h"
 
 namespace esphome {
-namespace ld2410 {
+namespace HMMD_WAVE {
 
-class LightThresholdNumber : public number::Number, public Parented<LD2410Component> {
+class LightThresholdNumber : public number::Number, public Parented<HMMD_WAVEComponent> {
  public:
   LightThresholdNumber() = default;
 
@@ -14,5 +14,5 @@ class LightThresholdNumber : public number::Number, public Parented<LD2410Compon
   void control(float value) override;
 };
 
-}  // namespace ld2410
+}  // namespace HMMD_WAVE
 }  // namespace esphome
